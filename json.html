@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.24.0/axios.min.js" integrity="sha512-u9akINsQsAkG9xjc1cnGF4zw5TFDwkxuc9vUp5dltDWYCSmyd0meygbvgXrlc/z7/o4a19Fb5V0OUE58J7dcyw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <title>Todo Using DRF and Vaniall Javascript</title>
+</head>
+<body>
+    Task: <input type="text" id="task"><br>
+    Completed: <input type="checkbox" id="check"><br>
+    User: <input type="text" id="user"> <br>
+    <button onclick="Save()">
+        Send
+    </button><br>
+
+    <div>
+        <form method="post">
+            Username <br>
+            <input type="text" id="uname"> <br>
+            Password <br>
+            <input type="password" id="pwd"> <br>
+            <button id="btn">
+                Login
+            </button>
+        </form>
+    </div>
+
+
+    <table id="todos">
+
+    </table>
+    <script>
+
+        const uname = document.getElementById('uname').value;
+        const password = document.getElementById('pwd').value;
+        
+
+        const data = document.getElementById('btn');
+
+        const api_url = 'http://127.0.0.1:8000/todo/api';
+//brilliantmakanju4@gmail.com
+        data.addEventListener('click', {
+            function (){
+                    axios.post('http://localhost:8000/api-token-auth/',{
+                        username: uname,
+                        password: password,
+                    }).then(function (res){
+                        console.log(res)
+                        localStorage.setItem('token', res.data.access);
+                        localStorage.setItem('user', res.config.data);
+                    }).catch(function (err){
+                        console.log(err)
+                    })
+                }  
+            });
+
+            /***let xhr = new XMLHttpRequest();
+            xhr.open("POST", "http://127.0.0.1:8000/api-token-auth/");
+            //xhr.setRequestHeader("Accept","application/json");
+            xhr.setRequestHeader("Content-Type", "application/json");
+            //xhr.responseType = 'json';
+            xhr.onreadystatechange = function (){
+                if (xhr.readyState === 4){
+                    console.log(xhr.status);
+                    console.log(xhr.responseText);
+                }};
+
+                let data = `{
+                    "username":${uname},
+                    "password":${pwd}
+                }`;
+
+                const loginUser = async (uname, pwd) => {
+                    const response = await fetch("http://127.0.0.1:8000/api-token-auth/", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        uname,
+                        pwd
+                    })
+                });
+                const data = await response.json();
+            }
+        }
+                xhr.send(data);**/
+                
+        
+
+        async function getapi(url){
+
+            const response = await fetch(url);
+
+            var data = await response.json();
+
+            //console.log(data);
+
+            //alert(JSON.stringify(data));
+            show(data);
+        
+        }
+
+
+        function show(data){
+            let tab = 
+                    `
+                        <tr>
+                            <th>Task</th>
+                            <th>Completed</th>
+                            <th>User</th>
+                            <th>Added</th>
+                            <th>Updated</th>
+                            <th>Edit</th>
+                            <th>Delete</th>
+                        </tr>
+                    `;
+            
+            
+
+            for ( let i = 0; i < data.length; i++) {
+                tab += `
+                    <tr>
+                        <td>${data[i].task}</td>
+                        <td><input type='checkbox' value='${data[i].completed}'></td>
+                        <td>${data[i].user}</td>
+                        <td>${data[i].updated.toString("MMMM yyyy")}</td>
+                        <td>${data[i].user}</td>
+                    </tr>
+                `;
+                
+            }
+                
+         
+            document.getElementById("todos").innerHTML = '';
+            document.getElementById("todos").innerHTML += tab;
+        }
+    
+        function Save(){
+            const querys = fetch('http://127.0.0.1:8000/todo/api', {
+                    method: "POST",
+                    body: JSON.stringify({task:document.getElementById('task').value, completed:document.getElementById('check').checked, user:document.getElementById('user').value}),
+                    headers: {"Content-Type":"application/json"}
+                })
+
+                getapi(api_url);
+        }
+
+        getapi(api_url);
+        
+    </script>
+</body>
+</html>
